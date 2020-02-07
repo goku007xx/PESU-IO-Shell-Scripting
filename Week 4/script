@@ -1,0 +1,41 @@
+#! /bin/bash
+
+if [[ "${#}" -eq 0 ]]
+then
+        echo "no arguments are present"
+        exit 1
+fi
+
+uid=${UID}
+
+if [[ $uid -eq 0 ]]
+then
+        username=${1}
+        password=${RANDOM}
+        comment=${2}
+        useradd -c ${comment} -m ${username} &> /dev/null
+
+        if [[ "${?}" -ne 0 ]]
+        then
+                echo "useradd command not completed" &> /dev/null
+                exit 1
+        fi
+
+        echo ${password} | passwd --stdin ${username} &> /dev/null
+        if [[ "${?}" -ne 0 ]]
+        then
+                echo "password command not completed" &> /dev/null
+                exit 1
+        fi
+
+        passwd -e ${username} &> /dev/null
+
+        echo "username:${username}"
+        echo "password:${password}"
+        echo "hostname:${HOSTNAME}"
+
+else
+
+        echo "u are not root,try using sudo"
+        exit 1
+fi
